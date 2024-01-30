@@ -3,16 +3,16 @@ import { io } from 'socket.io-client'
 import ChatParticipant from './ChatParticipant'
 
 export function NestChatComponent() {
-    const [messageData, setMessageData] = useState([])
-    const [onMount, setOnMount] = useState(false)
-    const [inputMessage, setInputMessage] = useState('')
-    const [socket, setSocket] = useState(null)
-    const [token, setToken] = useState('')
-    const [chatRoomId, setchatRoomId] = useState('')
-    const [applyData, setApplyData] = useState({})
-    const [handshake, setHandshake] = useState({})
-    const [page, setPage] = useState(1)
-    const [userData, setUserData] = useState({})
+    const [messageData, setMessageData] = useState([]) // Chat message list
+    const [onMount, setOnMount] = useState(false) // Component mount status
+    const [inputMessage, setInputMessage] = useState('') // Message input box state
+    const [socket, setSocket] = useState(null) // Socket connection instance
+    const [token, setToken] = useState('') // Auth Token text area state
+    const [chatRoomId, setchatRoomId] = useState('') // Chat Room ID input box state
+    const [applyData, setApplyData] = useState({}) // Applied configuration 
+    const [handshake, setHandshake] = useState({}) // Handshake data -> token payload 
+    const [page, setPage] = useState(1) // Pagination for chat messages
+    const [userData, setUserData] = useState({}) // Chat Participant user data
 
 
     // Using Normal Fetch APIs to get pagination of previous messages
