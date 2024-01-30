@@ -14,11 +14,14 @@ export function NestChatComponent() {
     const [page, setPage] = useState(1)
     const [userData, setUserData] = useState({})
 
+
+    // Using Normal Fetch APIs to get pagination of previous messages
     async function getOlderMessage() {
         const nextPage = page + 1
         setPage(nextPage)
+        // Fetch API for listMessage: query (page, chatRoomId)
         try {
-            const res = await fetch(`http://localhost:8080/chat/listMessage?page=${nextPage}&chatroom_id=${applyData.chatRoomId}`, {
+            const res = await fetch(`http://localhost:8080/chat/listMessage?page=${nextPage}&chatRoomId=${applyData.chatRoomId}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,13 +32,17 @@ export function NestChatComponent() {
                 throw new Error('Network response was not ok');
             }
             const data = await res.json(); // Parse the response as JSON
+            // Paginated data is in descending datetime for latest to oldest 
             const dataSort = data.reverse()
+            // Update cached data
             setMessageData((prevMsgData) => [...dataSort, ...prevMsgData]);
         } catch (err) {
             console.error('There was a problem with the fetch operation:', err);
         }
     }
 
+    // Get chat participant data 
+    // Cache and use it repetitively instead of relation fetches 
     async function getChatParticipantData() {
         try {
             const res = await fetch(`http://localhost:8080/chat/chatParticipants/${applyData.chatRoomId}`, {
@@ -49,12 +56,14 @@ export function NestChatComponent() {
                 throw new Error('Network response was not ok');
             }
             const data = await res.json(); // Parse the response as JSON
+            // Set participant data
             setUserData(data);
         } catch (err) {
             console.error('There was a problem with the fetch operation:', err);
         }
     }
 
+    // Send message via web socket event 
     function onSubmit() {
         socket.emit('createMessage', {
             chatRoomId: parseInt(applyData.chatRoomId),
@@ -64,6 +73,7 @@ export function NestChatComponent() {
         })
     }
 
+    // Set config for proxy purpose
     function apply() {
         setApplyData({
             token,
@@ -71,19 +81,24 @@ export function NestChatComponent() {
         })
     }
 
+    // Get token payload
     function onHandShake() {
         socket.emit('showId', {}, (res) => {
             setHandshake(res)
         })
     }
 
+    // Initialize new config changes
     useEffect(() => {
         if (onMount) {
+            // Prevent socket connection without token -> forbidden error
             if (!applyData.token) {
                 console.error("No token")
                 return
             }
+            // Reset Pagination
             setPage(1)
+            // Connect to socket with auth token 
             const newSocket = io("http://localhost:8080",
                 {
                     auth: { token: applyData.token }
@@ -95,11 +110,14 @@ export function NestChatComponent() {
 
 
     useEffect(() => {
+        // Listen to socket events
         if (socket) {
             setMessageData([])
+            // initial list (first page)
             socket.emit('listMessages', { chatroom_id: parseInt(chatRoomId) }, (res) => {
                 setMessageData(res.reverse())
             })
+            // update list when new messages are sent
             socket.on('message', (message) => {
                 setMessageData((prevData) => [...prevData, message])
             })
@@ -114,7 +132,7 @@ export function NestChatComponent() {
     }, [])
 
 
-
+    // SAMPLE USAGE 
     return (
         <div style={{ display: 'flex', gap: 48 }}>
             <div style={{ width: '50%', padding: 12 }}>
