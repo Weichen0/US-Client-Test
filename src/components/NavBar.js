@@ -19,8 +19,7 @@ export default function NavBar() {
                 </div>
                 {userProfile ?
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-
-                        {userProfile.firstName}
+                        <span>{`${userProfile.firstName} ${userProfile.lastName}`}</span>
                         <button
                             style={{ padding: 10 }} onClick={handleLogOut}>Log Out</button>
                     </div>
