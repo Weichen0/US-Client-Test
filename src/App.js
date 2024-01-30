@@ -5,6 +5,7 @@ import NavBar from './components/NavBar';
 import UploadPage from './pages/upload';
 import HomePage from './pages/home';
 import NestChatPage from './pages/nestchat';
+import SignInPage from './pages/signIn';
 function App() {
   return (
     <div>
@@ -16,6 +17,8 @@ function App() {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/nest-chat" element={<NestChatPage />} />
+            <Route path="/sign-in" element={<SignInPage />} />
+
           </Routes>
         </div>
       </Router>
