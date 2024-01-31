@@ -13,10 +13,12 @@ export function NestChatRoom({ selectedRoom }) {
     const [userData, setUserData] = useState({}) // Chat Participant user data
 
     // Using Normal Fetch APIs to get pagination of previous messages
+    // - Pardon the bad pagination setup
     async function getOlderMessage() {
         const nextPage = page + 1
         setPage(nextPage)
         // Fetch API for listMessage: query (page, chatRoomId)
+        // - Use camelCase for query params
         try {
             const res = await fetch(`http://localhost:8080/chat/listMessage?page=${nextPage}&chatRoomId=${selectedRoom}`, {
                 method: "GET",
@@ -38,8 +40,8 @@ export function NestChatRoom({ selectedRoom }) {
         }
     }
 
-    // Get chat participant data 
-    // Cache and use it repetitively instead of relation fetches 
+    // Get chat participant data (Object format)
+    // - Cache and use it repetitively instead of relation fetches 
     async function getChatParticipantData() {
         try {
             const res = await fetch(`http://localhost:8080/chat/chatParticipants/${selectedRoom}`, {
@@ -96,7 +98,7 @@ export function NestChatRoom({ selectedRoom }) {
         if (socket) {
             setMessageData([])
             // initial list (first page)
-            socket.emit('listMessages', { chatroom_id: parseInt(selectedRoom) }, (res) => {
+            socket.emit('listMessages', { chatRoomId: parseInt(selectedRoom) }, (res) => {
                 setMessageData(res.reverse())
             })
             // update list when new messages are sent
@@ -128,7 +130,7 @@ export function NestChatRoom({ selectedRoom }) {
                     {messageData?.length ?
                         <>
                             <div>
-                                <button onClick={() => getOlderMessage()}>Load Previous Sad Pagination</button>
+                                <button onClick={() => getOlderMessage()}>Load Previous Sad Pagination {page}</button>
                             </div>
                             {messageData.map((item, index) => {
                                 if (item?.messageType === "SYS_MESSAGE") {
@@ -152,8 +154,8 @@ export function NestChatRoom({ selectedRoom }) {
                         </div>
                     }
 
-                    <div style={{ marginTop: 8 }}>
-                        <input type='text' value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} placeholder='message ... ' />
+                    <div style={{ marginTop: 8, width: '100%', display: "flex" }}>
+                        <input style={{ width: "100%" }} type='text' value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} placeholder='message ... ' />
                         <button onClick={() => onSubmit()}>Send</button></div>
                 </div>
 
