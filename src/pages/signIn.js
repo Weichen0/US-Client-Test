@@ -50,7 +50,7 @@ export default function SignInPage() {
             })
 
             if (!fetchRes.ok) {
-                throw new Error('Authentication failed');
+                setResponse(fetchRes)
             }
             const data = await fetchRes.json();
             setResponse(data)

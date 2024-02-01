@@ -9,18 +9,20 @@ export function NestChatRoom({ selectedRoom }) {
     const [onMount, setOnMount] = useState(false) // Component mount status
     const [inputMessage, setInputMessage] = useState('') // Message input box state
     const [socket, setSocket] = useState(null) // Socket connection instance
-    const [page, setPage] = useState(1) // Pagination for chat messages
+    const [page, setPage] = useState(0) // Pagination for chat messages
     const [userData, setUserData] = useState({}) // Chat Participant user data
 
     // Using Normal Fetch APIs to get pagination of previous messages
     // - Pardon the bad pagination setup
-    async function getOlderMessage() {
-        const nextPage = page + 1
-        setPage(nextPage)
+    async function getPreviousMessage() {
+        setPage((prevPage) => prevPage + 1);
+    }
+
+    async function getMessage() {
         // Fetch API for listMessage: query (page, chatRoomId)
         // - Use camelCase for query params
         try {
-            const res = await fetch(`http://localhost:8080/chat/listMessage?page=${nextPage}&chatRoomId=${selectedRoom}`, {
+            const res = await fetch(`http://localhost:8080/chat/listMessage?page=${page}&chatRoomId=${selectedRoom}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,16 +99,20 @@ export function NestChatRoom({ selectedRoom }) {
         // Listen to socket events
         if (socket) {
             setMessageData([])
-            // initial list (first page)
-            socket.emit('listMessages', { chatRoomId: parseInt(selectedRoom) }, (res) => {
-                setMessageData(res.reverse())
-            })
+            socket.emit('joinChatRoom', { chatRoomId: parseInt(selectedRoom) }, (res) => {
+                // Handle the response if needed
+            });
+            socket.on('userJoined', (data) => {
+                // if online state/ is read needed
+            });
             // update list when new messages are sent
             socket.on('message', (message) => {
                 setMessageData((prevData) => [...prevData, message])
             })
+            setPage(1) //Trigger initial page fetch
             return () => {
                 socket.off('message');
+                socket.off('userJoined');
             };
         }
     }, [socket])
@@ -115,6 +121,11 @@ export function NestChatRoom({ selectedRoom }) {
         setOnMount(true)
     }, [selectedRoom])
 
+    useEffect(() => {
+        if (page) {
+            getMessage()
+        }
+    }, [page])
 
 
 
@@ -130,7 +141,7 @@ export function NestChatRoom({ selectedRoom }) {
                     {messageData?.length ?
                         <>
                             <div>
-                                <button onClick={() => getOlderMessage()}>Load Previous Sad Pagination {page}</button>
+                                <button onClick={() => getPreviousMessage()}>Load Previous Sad Pagination {page}</button>
                             </div>
                             {messageData.map((item, index) => {
                                 if (item?.messageType === "SYS_MESSAGE") {
