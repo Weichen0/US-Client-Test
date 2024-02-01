@@ -83,7 +83,7 @@ export function NestChatRoom({ selectedRoom }) {
                 return
             }
             // Reset Pagination
-            setPage(1)
+            setPage(null)
             // Connect to socket with auth token 
             const newSocket = io("http://localhost:8080",
                 {
