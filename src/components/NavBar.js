@@ -16,6 +16,8 @@ export default function NavBar() {
                     <Link className="navbarlink" to="/nest-chat">NestTemplate Chat</Link>
                     <Link className="navbarlink" to="/chat">Fightcode Chat</Link>
                     <Link className="navbarlink" to="/upload">Upload</Link>
+                    <Link className="navbarlink" to="/billing">Billing</Link>
+
                 </div>
                 {userProfile ?
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

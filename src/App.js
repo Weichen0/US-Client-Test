@@ -6,6 +6,7 @@ import UploadPage from './pages/upload';
 import HomePage from './pages/home';
 import NestChatPage from './pages/nestchat';
 import SignInPage from './pages/signIn';
+import BillingPage from './pages/billing';
 function App() {
   return (
     <div>
@@ -18,6 +19,7 @@ function App() {
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/nest-chat" element={<NestChatPage />} />
             <Route path="/sign-in" element={<SignInPage />} />
+            <Route path="/billing" element={<BillingPage />} />
 
           </Routes>
         </div>
